@@ -1,0 +1,49 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+    
+    <aura:attribute name="searchNameKey" type="String" default="" />
+    <aura:attribute name="searchTypeKey" type="String" default="" />
+    <aura:attribute name="searchPriceKey" type="Integer" default="0" />
+                    
+    <aura:registerEvent name="searchFilterChange" type="c:FoodSearchFilterChangeEvent"/>
+    
+    <!-- SEARCH FORM -->
+    <lightning:layout >
+        <lightning:layoutItem padding="around-small" size="4">
+            
+            <div aria-labelledby="mealsearchform" >
+                
+                <!-- BOXED AREA -->
+                <fieldset class="slds-box slds-theme--default slds-container--small">
+                    
+                    <legend id="searchform" class="slds-text-heading--small 
+                                                   slds-p-vertical--medium">
+                        <lightning:icon iconName="utility:filterList" size="x-small" alternativeText="Filters"/>
+                        Seach something delicious...
+                        <lightning:icon iconName="utility:dash" size="x-small" alternativeText="Collapse section"/>
+                    </legend>
+                    
+                    <!-- Form items -->
+                    <form class="slds-form--stacked">          
+                        <lightning:input aura:id="searchform" label="Meal Name"
+                                         name="name" placeholder="Enter food to search" value="{! v.searchNameKey }" /> 
+
+                        <c:PicklistSelect objectName="mbuttlightning__MealItem__c" 
+                                          fieldName="mbuttlightning__type__c" 
+                                          label="Meal Type"
+                                          value="{! v.searchTypeKey }"/>
+
+                        <lightning:slider step="10" value="{!v.searchPriceKey}" label="Price range" min="0" max="2000" />
+                        
+                        <lightning:button label="Search" 
+                                          class="slds-m-top--medium"
+                                          variant="brand"
+                                          onclick="{! c.searchMeals }"/>
+                    </form>                    
+                </fieldset>
+                <!-- / BOXED AREA -->
+            </div>
+            
+        </lightning:layoutItem>
+    </lightning:layout>
+    <!-- SEARCH FORM -->
+</aura:component>

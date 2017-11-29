@@ -1,0 +1,21 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+    
+    <aura:attribute name="itemsMap" type="Map" />
+    <aura:handler event="c:AddItemEvent" action="{!c.addItem}" /> 
+    
+    <!-- BOXED AREA -->
+    <fieldset class="slds-box slds-theme--default slds-container--small" >
+        
+        <legend id="searchform" class="slds-text-heading--small 
+                                       slds-p-vertical--medium">
+            <lightning:icon iconName="utility:shopping_bag" size="x-small" alternativeText="summary"/>
+            Order Summary
+        </legend>
+        
+        <!-- Form items -->
+        <form class="slds-form--stacked">          
+            <div class="slds-text-heading_medium">{! v.itemsMap }</div>
+        </form>                    
+    </fieldset>
+    <!-- / BOXED AREA -->
+</aura:component>

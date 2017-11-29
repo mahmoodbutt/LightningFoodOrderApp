@@ -1,0 +1,68 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="FoodListController">
+    
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="filterObject" type="Object" />
+    <!-- <aura:attribute name="columns" type="List"/> -->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <aura:registerEvent name="addItem" type="c:AddItemEvent"/>
+    <!-- define handler to hanlde the search event -->
+    <aura:handler event="c:FoodSearchFilterChangeEvent" action="{!c.handleFoodSearch}" /> 
+    
+    <!-- FORM -->
+    <lightning:layout >
+        <lightning:layoutItem padding="around-small" smalldevicesize="4" size="4" largeDeviceSize="12">
+            
+            <div aria-labelledby="mealsearchform" >
+                
+                <!-- BOXED AREA -->
+                <fieldset class="slds-box slds-theme--default slds-container--large">
+                    
+                    <legend id="searchform" class="slds-text-heading--small 
+                                                   slds-p-vertical--medium">
+                        <lightning:icon iconName="utility:list" size="x-small" alternativeText="Collapse section"/>
+                        Results
+                    </legend>
+                    
+                    <!-- Form items -->
+                    <form class="slds-form--stacked">          
+                        <!-- <lightning:datatable data="{! v.data }" 
+                                             columns="{! v.columns }" 
+                                             keyField="id"
+                                             onrowselection="{! c.getSelectedName }" /> -->
+                        <aura:iteration items="{! v.data }" var="item">
+                            <lightning:card iconName="standard:event" title="{!item.name}" aura:id="{! item.recordId }" >
+                                <aura:set attribute="actions">
+                                    <lightning:button name="{! item.recordId }" aura:id="{! item.recordId }" 
+                                                      label="Add" iconName="utility:add" onclick="{! c.addSelectedItem }" />
+                                </aura:set>
+                                <div aura:id="errordiv" style="display:none;">error div - {! 'div' + item.recordId }</div>
+                                <lightning:layout horizontalAlign="space">  
+                                    <lightning:layoutItem padding="around-small" size="2" smallDeviceSize="1" >
+                                        <ui:outputRichText aura:id="image" value="{! item.image }" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" >
+                                        <label for="price" >Price</label><br />
+                                        <ui:outputText class="slds-text-heading_medium" value="{! item.price}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" >
+                                        <label for="type" >Type</label><br />
+                                        <ui:outputText class="slds-text-heading_medium" value="{!item.type}" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" >
+                                        <label for="quantity" >Quantity</label><br />
+                                        <lightning:input aura:id="quantity" class="slds-text-heading_medium" min="0" max="10" type="number" 
+                                                         label="Quantity" value="{!item.quantity}" variant="label-hidden" />
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+                            </lightning:card>
+                        </aura:iteration>
+                    </form>                    
+                </fieldset>
+                <!-- / BOXED AREA -->
+            </div>
+            
+        </lightning:layoutItem>
+    </lightning:layout>
+    <!-- FORM -->
+</aura:component>

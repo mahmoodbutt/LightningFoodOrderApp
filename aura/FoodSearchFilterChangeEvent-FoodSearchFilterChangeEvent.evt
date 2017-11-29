@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Sends filter criteria to hanling components" >
+    <aura:attribute name="foodName" type="String"/>
+    <aura:attribute name="mealType" type="String"/>
+    <aura:attribute name="price" type="Integer"/>
+</aura:event>

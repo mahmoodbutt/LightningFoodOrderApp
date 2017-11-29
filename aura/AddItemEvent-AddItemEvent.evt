@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Sends a food item to be added by Order." >
+    <aura:attribute name="foodItem" type="Object"/>
+</aura:event>

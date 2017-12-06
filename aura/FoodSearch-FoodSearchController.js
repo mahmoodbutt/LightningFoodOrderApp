@@ -17,4 +17,8 @@
         }).fire();
         
     },
+    collapseSearch : function(cmp){
+        var frmSearch = cmp.find("frmSearch");
+        $A.util.toggleClass(frmSearch, 'slds-hide');
+    }
 })

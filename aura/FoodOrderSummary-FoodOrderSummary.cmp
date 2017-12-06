@@ -1,21 +1,55 @@
-<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="FoodListController">
     
-    <aura:attribute name="itemsMap" type="Map" />
+    <aura:attribute name="itemsTotalCount" type="Integer" default="0" />
+    <aura:attribute name="itemsTotalAmount" type="Double" default="0.00" />
+    <aura:attribute name="itemsMap" type="Map" default="{}" />
+    <aura:attribute name="items" type="Object[]" default="{}" />
+    <aura:attribute name="btnDisabled" type="boolean" default="true" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
     <aura:handler event="c:AddItemEvent" action="{!c.addItem}" /> 
     
-    <!-- BOXED AREA -->
-    <fieldset class="slds-box slds-theme--default slds-container--small" >
-        
-        <legend id="searchform" class="slds-text-heading--small 
-                                       slds-p-vertical--medium">
-            <lightning:icon iconName="utility:shopping_bag" size="x-small" alternativeText="summary"/>
-            Order Summary
-        </legend>
-        
-        <!-- Form items -->
-        <form class="slds-form--stacked">          
-            <div class="slds-text-heading_medium">{! v.itemsMap }</div>
-        </form>                    
-    </fieldset>
-    <!-- / BOXED AREA -->
+    <!-- FORM -->
+    <lightning:layout >
+        <lightning:layoutItem padding="around-small" smalldevicesize="12" size="12" largeDeviceSize="12">
+            <!-- BOXED AREA -->
+            <fieldset class="slds-box slds-theme--default slds-container--small" >
+                
+                <legend id="searchform" class="slds-text-heading--small 
+                                               slds-p-vertical--medium">
+                    <lightning:icon iconName="utility:shopping_bag" size="x-small" alternativeText="summary"/>
+                    Order Summary
+                </legend>
+                
+                <!-- Form items -->
+                <form class="slds-form--stacked">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col"><div class="slds-truncate" title="Name">Name</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Price">Unit Price</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Contact">Quantity</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Remove Item">Del</div></th>
+                            </tr>
+                        </thead>
+                        <aura:iteration items="{! v.items }" var="item">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" data-label="Name"><div class="slds-truncate" title="Name"><a href="javascript:void(0);">{! item.name }</a></div></th>
+                                    <th scope="row" data-label="Price"><div class="slds-truncate" title="Price">{! item.price }</div></th>
+                                    <th scope="row" data-label="Quantity"><div class="slds-truncate" title="Quantity">{! item.quantity }</div></th>
+                                    <th scope="row" data-label="Remove Item"><lightning:button name="{! item.recordId }" aura:id="{! item.recordId }" iconName="utility:delete" onclick="{! c.deleteBtnClicked }" /></th>
+                                </tr>
+                            </tbody>
+                        </aura:iteration>
+                    </table>
+                    <div class="slds-text-heading_medium">Items: {! v.itemsTotalCount }</div>
+                    <div class="slds-text-heading_large">Total Amount: {! v.itemsTotalAmount } </div>
+                    <lightning:button name="confirmorder" aura:id="btnConfirmOrder" disabled="{! v.btnDisabled }"
+                                      label="Confirm Order" iconName="utility:save" onclick="{! c.confirmOrder }" />
+                </form>                    
+            </fieldset>
+            <!-- / BOXED AREA -->
+        </lightning:layoutItem>
+    </lightning:layout>
 </aura:component>

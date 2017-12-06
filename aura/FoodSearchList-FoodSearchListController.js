@@ -5,7 +5,7 @@
             searchKey: '',
             type: '',
             price: 0
-        }
+        };
         cmp.set("v.filterObject", filterObject);
         /*
         cmp.set('v.columns', [
@@ -25,7 +25,7 @@
             var error = true;
             //helper.createErrorMessage( cmp, error, "errordiv" );
             //"div" + event.getSource().get("v.name")
-     
+            
         }
         else{
             // set the event paramters
@@ -43,7 +43,6 @@
         var name = event.getParam("foodName");
         var type = event.getParam("mealType");
         var price = event.getParam("price");
-        alert("this>name:" + name + " -type:"+ type + "Price:" + price);
         //alert(event.getParam("mealType"));
         var filterObject = component.get("v.filterObject");
         console.log(filterObject);
@@ -58,5 +57,15 @@
         }
         console.log(filterObject);
         helper.getFoodItems(component);
+    },
+    // this function automatic call by aura:waiting event  
+    showSpinner: function(component, event, helper) {
+        // make Spinner attribute true for display loading spinner 
+        component.set("v.Spinner", true); 
+    },
+    // this function automatic call by aura:doneWaiting event 
+    hideSpinner : function(component,event,helper){
+        // make Spinner attribute to false for hide loading spinner    
+        component.set("v.Spinner", false);
     }
 })

@@ -3,55 +3,44 @@
 */
 public with sharing class FoodListController {
     
+    // Wrapper class for the order details
+    public class OrderDetails {
+        
+        @AuraEnabled public string	name { get;set; }
+        @AuraEnabled public id 		recordId { get;set; }
+        @AuraEnabled public integer quantity { get;set; }
+        @AuraEnabled public double 	price { get;set; }
+        @AuraEnabled public string 	image { get;set; }
+        @AuraEnabled public string 	type { get;set; }
+        
+    }
     // Wrapper class for the filters
-	public class Filter {
+    public class Filter {
         
-        @AuraEnabled
-        public String searchKey { get;set; }
+        @AuraEnabled public String  searchKey { get;set; }
+        @AuraEnabled public String  type { get;set; }
+        @AuraEnabled public integer price { get;set; }
         
-        @AuraEnabled
-        public String type { get;set; }
-        
-        @AuraEnabled
-        public integer price { get;set; }
-       
     }
     // Wrapper class for food Items
-	public class MealItemsWrp {
+    public class MealItemsWrp {
         
-        @AuraEnabled
-        public id recordId { get;set; }
-        
-        @AuraEnabled
-        public String name { get;set; }
-        
-        @AuraEnabled
-        public String type { get;set; }
-        
-        @AuraEnabled
-        public decimal price { get;set; }
-        
-        @AuraEnabled
-        public string image { get;set; }
+        @AuraEnabled public id 		recordId { get;set; }
+        @AuraEnabled public String 	name { get;set; }
+        @AuraEnabled public String 	type { get;set; }
+        @AuraEnabled public decimal price { get;set; }
+        @AuraEnabled public string 	image { get;set; }
         // defining quantity as this will be a defined in the list component
-        @AuraEnabled
-        public integer quantity { get;set; }
-       
+        @AuraEnabled public integer quantity { get;set; }
+        
     }
     
     public class PagedResult {
         
-        @AuraEnabled
-        public Integer pageSize { get;set; }
-        
-        @AuraEnabled
-        public Integer page { get;set; }
-        
-        @AuraEnabled
-        public Integer total { get;set; }
-        
-        @AuraEnabled
-        public List<MealItemsWrp> foodItems { get;set; }
+        @AuraEnabled public Integer pageSize { get;set; }
+        @AuraEnabled public Integer page { get;set; }
+        @AuraEnabled public Integer total { get;set; }
+        @AuraEnabled public List<MealItemsWrp> foodItems { get;set; }
         //public List<MealItem__c> foodItems { get;set; }
         
     }
@@ -72,8 +61,8 @@ public with sharing class FoodListController {
         if (filter.price > 0 ) queryFilter = queryFilter + ' AND Price__c < ' + filter.price;
         if (filter.type != '') queryFilter = queryFilter + ' AND Type__c like \'' + filter.type + '\'';
         
-                  
-        System.debug('Qry: ' + 'SELECT id, Name, Price__c, Type__c, Image__c FROM MealItem__c WHERE Name LIKE ' +  key + queryFilter);
+        
+        //System.debug('Qry: ' + 'SELECT id, Name, Price__c, Type__c, Image__c FROM MealItem__c WHERE Name LIKE ' +  key + queryFilter);
         List<MealItemsWrp> mealtItems = new List<MealItemsWrp> ();
         for (MealItem__c mItem : (List<MealItem__c>) Database.query('SELECT id, Name, Price__c, Type__c, Image__c FROM MealItem__c WHERE Name LIKE \'' +  key + '\'' + queryFilter))
         {
@@ -90,19 +79,53 @@ public with sharing class FoodListController {
         r.foodItems = mealtItems;
         r.total = r.foodItems.size();
         /*
-         * r.total = [SELECT count() FROM MealItem__c 
-                   WHERE Name LIKE :key
-                   AND Type__c like : (filter.type == '' ? '%' : filter.type)
-                   AND Price__c < : (filter.price == 0 ? 999999 : filter.price)
-                   ];
-		r.foodItems = [SELECT id, Name, Price__c, Type__c, Image__c
-                       FROM MealItem__c 
-                       WHERE name LIKE :key
-                       AND Type__c like : (filter.type == '' ? '%' : filter.type)
-                       AND Price__c < : (filter.price == 0 ? 999999 : filter.price)
-                       ];
-		*/
+        * r.total = [SELECT count() FROM MealItem__c 
+        WHERE Name LIKE :key
+        AND Type__c like : (filter.type == '' ? '%' : filter.type)
+        AND Price__c < : (filter.price == 0 ? 999999 : filter.price)
+        ];
+        r.foodItems = [SELECT id, Name, Price__c, Type__c, Image__c
+        FROM MealItem__c 
+        WHERE name LIKE :key
+        AND Type__c like : (filter.type == '' ? '%' : filter.type)
+        AND Price__c < : (filter.price == 0 ? 999999 : filter.price)
+        ];
+        */
         return r;
     }
-    
+    // save the items in the order header and detail objects
+    @AuraEnabled
+    public static boolean saveOrderInfo( String orderDtl ) {
+        
+        // validate data
+        // insert order information
+        system.debug('order obj: ' + orderDtl);
+        FoodOrder__c hdr = new FoodOrder__c( Order_Date__c = Datetime.now() );
+        try 
+        {
+            insert hdr;
+            
+            List<OrderDetails> foodItems = (List<OrderDetails>) JSON.deserializeStrict(orderDtl, List<FoodListController.OrderDetails>.class);
+            List<FoodOrderDetail__c> foodItemsInsert = new List<FoodOrderDetail__c>();
+            
+            for (OrderDetails item: foodItems)
+            {
+                foodItemsInsert.add( new FoodOrderDetail__c (
+                    Name = item.name,
+                    FoodOrderId__c = hdr.id, 
+                    MealItemId__c = item.recordId,
+                    Quantity__c = item.quantity,
+                    UnitPrice__c = item.price
+                ));
+            }
+            system.debug( 'food Items to insert: ' + foodItemsInsert );
+            insert foodItemsInsert;
+			return true;            
+        } 
+        catch (dmlException dmlex)
+        {
+            system.debug('error:' + dmlex.getMessage());
+            return false;
+        }
+    }
 }

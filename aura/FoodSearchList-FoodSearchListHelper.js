@@ -1,6 +1,6 @@
 ({
     getFoodItems : function(cmp) {
-        var action = cmp.get('c.getFoodList');
+        var action = cmp.get("c.getFoodList");
         //alert(JSON.stringify(cmp.get("v.filterObject")));
         action.setParams({
             "filters": JSON.stringify(cmp.get("v.filterObject")),
@@ -13,7 +13,7 @@
                 //cmp.set("v.data", response.getReturnValue());
                 
                 var result = response.getReturnValue();
-                alert(JSON.stringify(result) );
+                //alert(JSON.stringify(result) );
                 cmp.set("v.data", result.foodItems);
                 //cmp.set("v.page", result.page);
                 // cmp.set("v.total", result.total);
@@ -27,6 +27,7 @@
     getObjectByValue : function(objArr, keyLookup, value){
         return objArr.find(key => key[keyLookup] === value);
     },
+    /* this function is not turned ON
     createErrorMessage: function( cmp, error, divId ){
         
         try {
@@ -68,4 +69,5 @@
                                 });
         }
     }
+    */
 })

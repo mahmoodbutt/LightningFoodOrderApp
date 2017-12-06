@@ -2,16 +2,22 @@
     
     <aura:attribute name="data" type="Object"/>
     <aura:attribute name="filterObject" type="Object" />
+    <aura:attribute name="Spinner" type="boolean" default="true"/>
     <!-- <aura:attribute name="columns" type="List"/> -->
     <aura:handler name="init" value="{! this }" action="{! c.init }"/>
     
+    <!-- create 2 aura handler with waiting and donewaiting events--> 
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <!-- register event that will fire when an Item is added -->
     <aura:registerEvent name="addItem" type="c:AddItemEvent"/>
+    
     <!-- define handler to hanlde the search event -->
     <aura:handler event="c:FoodSearchFilterChangeEvent" action="{!c.handleFoodSearch}" /> 
     
     <!-- FORM -->
     <lightning:layout >
-        <lightning:layoutItem padding="around-small" smalldevicesize="4" size="4" largeDeviceSize="12">
+        <lightning:layoutItem padding="around-small" smalldevicesize="12" size="12" largeDeviceSize="12">
             
             <div aria-labelledby="mealsearchform" >
                 
@@ -23,7 +29,17 @@
                         <lightning:icon iconName="utility:list" size="x-small" alternativeText="Collapse section"/>
                         Results
                     </legend>
-                    
+                    <!--loading spinner start... style=Brand Medium (blue dots)-->
+                    <aura:if isTrue="{!v.Spinner}">
+                        <div aura:id="spinnerId" class="slds-spinner_container">
+                            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <!-- Loading spinner end-->    
                     <!-- Form items -->
                     <form class="slds-form--stacked">          
                         <!-- <lightning:datatable data="{! v.data }" 
@@ -38,7 +54,7 @@
                                 </aura:set>
                                 <div aura:id="errordiv" style="display:none;">error div - {! 'div' + item.recordId }</div>
                                 <lightning:layout horizontalAlign="space">  
-                                    <lightning:layoutItem padding="around-small" size="2" smallDeviceSize="1" >
+                                    <lightning:layoutItem padding="around-small" size="2" >
                                         <ui:outputRichText aura:id="image" value="{! item.image }" />
                                     </lightning:layoutItem>
                                     <lightning:layoutItem padding="around-small" >
